@@ -8,6 +8,23 @@ Use url:
 
 `https://public:G9JTMUq9KJ4WwrF4keVY@gitlab.tu-clausthal.de/hcis/pflegebrille/pflegebrille-workflow-meta-model.git`
 
+## How to add as npm dependency
+
+Replace `<version>` with tag or commit
+
+### Option 1: update package.json deps
+
+```
+"pflegebrille-workflow-meta-model": "git+https://public:G9JTMUq9KJ4WwrF4keVY@gitlab.tu-clausthal.de/hcis/pflegebrille/pflegebrille-workflow-meta-model.git#<version>",
+```
+
+### Option 2: use npm
+
+```
+npm uninstall --save pflegebrille-workflow-meta-model
+npm install --save git+https://public:G9JTMUq9KJ4WwrF4keVY@gitlab.tu-clausthal.de/hcis/pflegebrille/pflegebrille-workflow-meta-model.git#<version>
+```
+
 ## Versioning
 
 Format: `v<MAJOR>.<MINOR>.<PATCH>` (see: https://semver.org/)
