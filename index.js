@@ -1,10 +1,11 @@
 import { DataTypeEnum } from './enum/DataTypeEnum';
 import { ElementPositionEnum } from './enum/ElementPositionEnum';
-import { pbModdle } from './moddle';
+import v1 from './model/v1';
 
-export default pbModdle;
+export default v1; // latest
+
 export { 
-    pbModdle,
+    v1,
     DataTypeEnum,
     ElementPositionEnum,
 };
