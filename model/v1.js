@@ -1,7 +1,7 @@
-import { DataTypeEnum } from './enum/DataTypeEnum';
-import { ElementPositionEnum } from './enum/ElementPositionEnum';
-import { enumToModdleEnum } from './util';
-import { version } from './package.json';
+import { enumToModdleEnum, makeUri } from '../util';
+
+import { DataTypeEnum } from '../enum/DataTypeEnum';
+import { ElementPositionEnum } from '../enum/ElementPositionEnum';
 
 /**
  * Important hints for changing/extending the model:
@@ -29,19 +29,19 @@ import { version } from './package.json';
 
 
 /**
- * ## VERSION (see package.json)
+ * ## VERSION
  * 
- * Format: 'v<MAJOR>.<MINOR>.<PATCH>' (see: https://semver.org/)
+ * Format: '<MAJOR>.<MINOR>.<PATCH>' (see: https://semver.org/)
  * 
  * MAJOR: increment on backwards incompatible change / breaking change
  * MINOR: increment on backwards compatible change (e.g. adding a type)
  * PATCH: always 0 (there are no non-breaking patches for a meta model)
  */
-export const MODEL_VERSION = `v${version}`;
+const VERSION = '1.0.0';
 
-export const pbModdle = {
+export default {
     name: "Pflegebrille BPMN Extension",
-    uri: "http://pflegebrille.de/schema/bpmn/pb-extension/" + MODEL_VERSION,
+    uri: makeUri(VERSION),
     prefix: "pb",
     xml: {
         tagAlias: "lowerCase"
