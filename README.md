@@ -25,9 +25,9 @@ npm uninstall --save pflegebrille-workflow-meta-model
 npm install --save git+https://public:G9JTMUq9KJ4WwrF4keVY@gitlab.tu-clausthal.de/hcis/pflegebrille/pflegebrille-workflow-meta-model.git#<version>
 ```
 
-## Versioning
+## Moddle Versioning
 
-Format: `v<MAJOR>.<MINOR>.<PATCH>` (see: https://semver.org/)
+Format: `<MAJOR>.<MINOR>.<PATCH>` (see: https://semver.org/)
  
 * MAJOR: backwards incompatible change / breaking change
 * MINOR: backwards compatible change
