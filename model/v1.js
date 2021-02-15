@@ -1,5 +1,7 @@
 import { enumToModdleEnum, makeUri } from '../util';
 
+import { CardinalityEnum } from '../enum/CardinalityEnum';
+import { DataModeEnum } from '../enum/DataModeEnum';
 import { DataTypeEnum } from '../enum/DataTypeEnum';
 import { ElementPositionEnum } from '../enum/ElementPositionEnum';
 
@@ -39,6 +41,15 @@ import { ElementPositionEnum } from '../enum/ElementPositionEnum';
  */
 const VERSION = '1.0.0';
 
+/**
+ * table of contents:
+ * 1. Assets
+ * 2. Data & DataTypes
+ * 3. Activity extensions
+ * 4. Function types
+ * 5. Functions for UserTask
+ * 6. Functions for ServiceTask
+ */
 export default {
     name: "Pflegebrille BPMN Extension",
     uri: makeUri(VERSION),
@@ -51,6 +62,24 @@ export default {
         enumToModdleEnum('ElementPositionEnum', ElementPositionEnum),
     ],
     types: [
+
+        /**
+         * 1. Assets
+         */
+        {
+            name: "Assets",
+            superClass: ["Element"],
+            meta: {
+                bpmnExtension: ["bpmn:Definitions"],
+            },
+            properties: [
+                {
+                    name: "assets",
+                    isMany: true,
+                    type: "Asset",
+                },
+            ]
+        },
         {
             name: "Asset",
             properties: [
@@ -67,64 +96,62 @@ export default {
                 }
             ]
         },
+
+
+        /**
+         * 2. Data & DataTypes
+         */
         {
-            name: "Assets",
-            superClass: [
-                "Element"
-            ],
+            name: "Data",
+            superClass: ["Element"],
+            meta: {
+                bpmnExtension: ["bpmn:Definitions"],
+            },
             properties: [
                 {
-                    name: "assets",
+                    name: "data",
                     isMany: true,
-                    type: "Asset",
-                },
+                    type: "Datum",
+                }
             ]
         },
         {
-            name: "DataObjectExtension",
-            superClass: [
-                "Element"
-            ],
+            name: "Datum",
             properties: [
                 {
-                    name: "dataType",
+                    name: "id",
+                    isAttr: true,
+                    type: "String",
+                    isId: true,
+                },
+                {
+                    name: "name",
+                    isAttr: true,
+                    type: "String",
+                },
+                {
+                    name: "type",
                     isAttr: true,
                     type: "DataTypeEnum",
                 },
-            ]
-        },
-        {
-            name: "DataInputOutputRef",
-            isAbstract: true,
-            properties: [
                 {
-                    name: "dataRef",
+                    name: "isCollection",
                     isAttr: true,
-                    isReference: true,
-                    type: "bpmn:ItemAwareElement",
+                    type: "Boolean",
                 },
             ]
         },
-        {
-            name: "DataInputRef",
-            superClass: [
-                "DataInputOutputRef"
-            ]
-        },
-        {
-            name: "DataOutputRef",
-            superClass: [
-                "DataInputOutputRef"
-            ]
-        },
+
+
         /**
-         * Task functions
+         * 3. Activity extensions
          */
         {
             name: "MediaText",
-            superClass: [
-                "Element"
-            ],
+            superClass: ["Element"],
+            meta: {
+                bpmnExtension: ["bpmn:ManualTask"],
+            },
             properties: [
                 {
                     name: "text",
@@ -140,10 +167,11 @@ export default {
             ]
         },
         {
-            name: "ActivityExtension",
-            superClass: [
-                "Element",
-            ],
+            name: "ServiceTaskExtension",
+            superClass: ["Element"],
+            meta: {
+                bpmnExtension: ["bpmn:ServiceTask"],
+            },
             properties: [
                 {
                     name: "function",
@@ -152,17 +180,23 @@ export default {
             ]
         },
         {
-            name: "ServiceTaskExtension",
-            superClass: [
-                "ActivityExtension"
-            ]
-        },
-        {
             name: "UserTaskExtension",
-            superClass: [
-                "ActivityExtension"
+            superClass: ["Element"],
+            meta: {
+                bpmnExtension: ["bpmn:UserTask"],
+            },
+            properties: [
+                {
+                    name: "function",
+                    type: "Function",
+                },
             ]
         },
+
+
+        /**
+         * 4. Function types
+         */
         {
             name: "Function",
             isAbstract: true,
@@ -170,175 +204,247 @@ export default {
         {
             name: "PatientContextFunction",
             isAbstract: true,
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "patientInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.PATIENT,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "WoundContextFunction",
             isAbstract: true,
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "woundInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.WOUND,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
+
+
         /**
-         * For UserTask
+         * 5. Functions for UserTask
          */
         {
             name: "PainScale",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "painValueOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.NUMERIC_VALUE,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "PatientSelect",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "patientOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.PATIENT,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "WoundDetection",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "woundPictureInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.IMAGE,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
                 {
                     name: "woundMeasurementOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.WOUND_MEASUREMENT,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "WoundPicture",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "woundPictureOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.IMAGE,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "WoundSelect",
-            superClass: [
-                "PatientContextFunction"
-            ],
+            superClass: ["PatientContextFunction"],
             properties: [
                 {
                     name: "woundOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.WOUND,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
+
+
         /**
-         * For ServiceTask
+         * 6. Functions for ServiceTask
          */
         {
             name: "ConcatData",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "firstInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.ANY
+                    }
                 },
                 {
                     name: "secondInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.ANY
+                    }
                 },
                 {
                     name: "collectionOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.MULTIPLE
+                    }
                 },
             ]
         },
         {
             name: "DeleteDataFromCollection",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "position",
                     isAttr: true,
                     type: "ElementPositionEnum",
-                    xml: { serialize: "xsi:type" },
                 },
                 {
                     name: "collectionInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.MULTIPLE
+                    }
                 },
                 {
                     name: "collectionOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.MULTIPLE
+                    }
                 },
             ]
         },
         {
             name: "SelectDataFromCollection",
-            superClass: [
-                "Function"
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "position",
                     isAttr: true,
                     type: "ElementPositionEnum",
-                    xml: { serialize: "xsi:type" },
                 },
                 {
                     name: "collectionInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.MULTIPLE
+                    }
                 },
                 {
                     name: "dataOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.ANY,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
@@ -351,33 +457,57 @@ export default {
             properties: [
                 {
                     name: "woundHistoryEntryInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.WOUND_HISTORY_ENTRY,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         },
         {
             name: "CreateWoundHistoryEntry",
-            superClass: [
-                "Function",
-            ],
+            superClass: ["Function"],
             properties: [
                 {
                     name: "woundHistoryEntryOutput",
-                    type: "DataOutputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.OUTPUT,
+                        dataType: DataTypeEnum.WOUND_HISTORY_ENTRY,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
                 {
                     name: "woundImageInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.IMAGE,
+                        dataCardinality: CardinalityEnum.ANY,
+                        dataOptional: true,
+                    }
                 },
                 {
                     name: "woundMeasurementInput",
-                    type: "DataInputRef",
-                    xml: { serialize: "xsi:type" },
+                    isAttr: true,
+                    isReference: true,
+                    type: "Datum",
+                    meta: {
+                        dataMode: DataModeEnum.INPUT,
+                        dataType: DataTypeEnum.WOUND_MEASUREMENT,
+                        dataCardinality: CardinalityEnum.SINGLE
+                    }
                 },
             ]
         }
+
     ],
 }
